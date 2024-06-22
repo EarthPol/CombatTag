@@ -1,47 +1,24 @@
 package com.earthpol.combattag.combat;
 
 import com.earthpol.combattag.CombatTag;
+import com.palmergames.bukkit.towny.scheduling.impl.FoliaTaskScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent.Reason;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CombatHandler {
     public static final long TAG_TIME = 45 * 1000;
-
     private static Map<UUID, Long> combatTags = new ConcurrentHashMap<>();
 
     static {
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                Iterator<Entry<UUID, Long>> iterator = combatTags.entrySet().iterator();
-
-                while (iterator.hasNext()) {
-                    Entry<UUID, Long> entry = iterator.next();
-
-                    if (entry.getValue() > System.currentTimeMillis())
-                        continue;
-
-                    iterator.remove();
-
-                    UUID uuid = entry.getKey();
-                    Player player = Bukkit.getPlayer(uuid);
-                    if (player == null || !player.isOnline())
-                        continue;
-
-                    player.sendMessage(ChatColor.GREEN + "You are no longer in combat.");
-                }
-            }
-        }.runTaskTimerAsynchronously(CombatTag.getInstance(), 10L, 10L);
+        FoliaTaskScheduler scheduler = new FoliaTaskScheduler(CombatTag.getInstance());
+        scheduler.runAsyncRepeating(new CombatTagTask(combatTags), 10L, 10L);
     }
 
     public static void applyTag(Player player) {
@@ -67,5 +44,34 @@ public class CombatHandler {
             return -1;
 
         return combatTags.get(player.getUniqueId()) - System.currentTimeMillis();
+    }
+}
+
+class CombatTagTask implements Runnable {
+    private final Map<UUID, Long> combatTags;
+
+    public CombatTagTask(Map<UUID, Long> combatTags) {
+        this.combatTags = combatTags;
+    }
+
+    @Override
+    public void run() {
+        Iterator<Map.Entry<UUID, Long>> iterator = combatTags.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<UUID, Long> entry = iterator.next();
+
+            if (entry.getValue() > System.currentTimeMillis())
+                continue;
+
+            iterator.remove();
+
+            UUID uuid = entry.getKey();
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null || !player.isOnline())
+                continue;
+
+            player.sendMessage(ChatColor.GREEN + "You are no longer in combat.");
+        }
     }
 }

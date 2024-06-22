@@ -4,6 +4,7 @@ import com.earthpol.combattag.combat.CombatHandler;
 import com.earthpol.combattag.combat.bossbar.BossBarTask;
 import com.earthpol.combattag.combat.listener.CombatListener;
 import com.earthpol.combattag.commands.CombatTagCommand;
+import com.palmergames.bukkit.towny.scheduling.impl.FoliaTaskScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,7 +41,8 @@ public final class CombatTag extends JavaPlugin {
     }
 
     private void runTasks(){
-        new BossBarTask().runTaskTimer(this, 10, 10);
+        FoliaTaskScheduler scheduler = new FoliaTaskScheduler(this);
+        scheduler.runAsyncRepeating(new BossBarTask(), 10L, 10L);
     }
 
     @Override
