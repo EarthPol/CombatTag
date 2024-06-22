@@ -1,0 +1,14 @@
+name: CombatTag
+version: '${project.version}'
+main: com.earthpol.combattag.CombatTag
+api-version: '1.20'
+folia-supported: true
+depend: [ Towny]
+authors: [ 0xBit ]
+description: A simple CombatTag Plugin
+commands:
+  combattag:
+    description: CobmatTag Command
+    permission: polaris.command.combattag
+    permission-message: You do not have permission to run this command!
+    usage: /combattag
