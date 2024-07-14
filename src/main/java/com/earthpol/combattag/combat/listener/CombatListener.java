@@ -2,6 +2,7 @@ package com.earthpol.combattag.combat.listener;
 
 //import com.gmail.goosius.siegewar.SiegeController;
 //import com.gmail.goosius.siegewar.utils.SiegeWarDistanceUtil;
+import com.earthpol.combattag.CombatTag;
 import com.google.common.collect.ImmutableSet;
 import com.earthpol.combattag.combat.CombatHandler;
 import com.earthpol.combattag.combat.bossbar.BossBarTask;
@@ -35,7 +36,7 @@ public class CombatListener implements Listener {
     private Random random = new Random();
 
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onDamage(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player))
             return;
@@ -58,8 +59,19 @@ public class CombatListener implements Listener {
         if (damager.equals(damagee))
             return;
 
-        CombatHandler.applyTag(damagee);
-        CombatHandler.applyTag(damager);
+        TownyWorld world = TownyAPI.getInstance().getTownyWorld(event.getEntity().getWorld().getName());
+        Player attacker = (Player) event.getDamager();
+        Player victim = (Player) event.getEntity();
+
+        assert world != null;
+        if (!CombatUtil.isAlly(attacker.getName(), victim.getName()) && CombatHandler.isTagged(attacker) && CombatHandler.isTagged(victim)){
+            event.setCancelled(false);
+            CombatHandler.applyTag(damagee);
+            CombatHandler.applyTag(damager);
+        } else if(!CombatUtil.isAlly(attacker.getName(), victim.getName()) && !event.isCancelled()){
+            CombatHandler.applyTag(damagee);
+            CombatHandler.applyTag(damager);
+        }
     }
 
     @EventHandler
@@ -106,7 +118,7 @@ public class CombatListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommand(PlayerCommandPreprocessEvent event){
         Player player = event.getPlayer();
-        if(CombatHandler.isTagged(player) && !player.hasPermission("polaris.command.combattag")) {
+        if(CombatHandler.isTagged(player) && !player.hasPermission("earthpol.command.combattag")) {
             String message = event.getMessage();
             message = message.replaceFirst("/", "");
 
@@ -144,6 +156,7 @@ public class CombatListener implements Listener {
         TownyWorld world = TownyAPI.getInstance().getTownyWorld(event.getVictimPlayer().getWorld().getName());
         Player attacker = event.getAttackingPlayer();
         Player victim = event.getVictimPlayer();
+        CombatTag.getInstance().getLogger().info("TownyPlayerDamagePlayerEvent: Attacker: " + attacker.getName() + ", Victim: " + victim.getName() + ", Cancelled: " + event.isCancelled());
 
         assert world != null;
         if (!world.isFriendlyFireEnabled() && CombatUtil.isAlly(attacker.getName(), victim.getName()))
@@ -153,28 +166,7 @@ public class CombatListener implements Listener {
             return;
 
         event.setCancelled(false);
-    }
-
-    @EventHandler
-    public void onArmorDamage(PlayerItemDamageEvent event) {
-        Player player = event.getPlayer();
-
-        TownBlock townBlock = TownyAPI.getInstance().getTownBlock(player.getLocation());
-        if(townBlock == null || townBlock.getType() != TownBlockType.ARENA)
-            return;
-
-        //Disable for non-siegewar
-        //if(!townBlock.hasTown() || SiegeController.hasSiege(Objects.requireNonNull(TownyAPI.getInstance().getTown(player.getLocation()))))
-        //    return;
-
-        ItemStack item = event.getItem();
-        if(!item.getType().toString().endsWith("HELMET") && !item.getType().toString().endsWith("CHESTPLATE") && !item.getType().toString().endsWith("LEGGINGS") && !item.getType().toString().endsWith("BOOTS"))
-            return;
-
-        if (10 < random.nextInt(100))
-            return;
-
-        event.setCancelled(true);
+        CombatTag.getInstance().getLogger().info("Combat enabled between " + attacker.getName() + " and " + victim.getName());
     }
 
     @EventHandler
