@@ -65,10 +65,18 @@ public class CombatListener implements Listener {
 
         assert world != null;
         if (!CombatUtil.isAlly(attacker.getName(), victim.getName()) && CombatHandler.isTagged(attacker) && CombatHandler.isTagged(victim)){
+            //Attacker is not ally to victim, attacker is tagged, victim is tagged.
             event.setCancelled(false);
             CombatHandler.applyTag(damagee);
             CombatHandler.applyTag(damager);
         } else if(!CombatUtil.isAlly(attacker.getName(), victim.getName()) && !event.isCancelled()){
+            //Attacker is not ally to victim, event is not canceled.
+            CombatHandler.applyTag(damagee);
+            CombatHandler.applyTag(damager);
+        } else if(!world.isFriendlyFireEnabled() && !CombatUtil.isAlly(attacker.getName(), victim.getName()) && !CombatHandler.isTagged(attacker) && CombatHandler.isTagged(victim)){
+            //FriendFire is not enabled, attacker is not ally to victim, attacker is not tagged, victim is not tagged.
+            //This confirms they are an ENEMY and are in your claims with a combat tag. So you can join the battle and be tagged yourself.
+            event.setCancelled(false);
             CombatHandler.applyTag(damagee);
             CombatHandler.applyTag(damager);
         }
