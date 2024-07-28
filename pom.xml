@@ -6,7 +6,7 @@
 
     <groupId>com.earthpol</groupId>
     <artifactId>CombatTag</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
     <packaging>jar</packaging>
 
     <name>CombatTag</name>
@@ -80,11 +80,6 @@
             <artifactId>towny</artifactId>
             <version>0.100.1.0</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.TownyAdvanced</groupId>
-            <artifactId>SiegeWar</artifactId>
-            <version>2.12.0</version>
         </dependency>
     </dependencies>
 </project>

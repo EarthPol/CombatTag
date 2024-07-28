@@ -1,16 +1,17 @@
 package com.earthpol.combattag.combat.listener;
 
-//import com.gmail.goosius.siegewar.SiegeController;
-//import com.gmail.goosius.siegewar.utils.SiegeWarDistanceUtil;
 import com.earthpol.combattag.CombatTag;
 import com.google.common.collect.ImmutableSet;
 import com.earthpol.combattag.combat.CombatHandler;
 import com.earthpol.combattag.combat.bossbar.BossBarTask;
 import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.event.damage.TownyPlayerDamagePlayerEvent;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.TownBlockType;
 import com.palmergames.bukkit.towny.object.TownyWorld;
+import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.utils.CombatUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
@@ -23,17 +24,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.*;
 
 public class CombatListener implements Listener {
     private Set<UUID> deathsForLoggingOut = new HashSet<>();
-    private Random random = new Random();
 
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -137,27 +135,12 @@ public class CombatListener implements Listener {
             event.setCancelled(true);
             player.sendMessage(ChatColor.RED + "You can't use that command while being in combat.");
         }
-        //Remove for non-siegewar:
-        /* } else if(!CombatHandler.isTagged(player) && SiegeWarDistanceUtil.isLocationInActiveSiegeZone(player.getLocation())){
-            String message = event.getMessage();
-            message = message.replaceFirst("/", "");
-
-            for (String value : BLACKLISTED_COMMANDS) {
-                if (message.equalsIgnoreCase(value)){
-                    event.setCancelled(true);
-                    player.setFlying(false);
-                    player.sendMessage(ChatColor.RED + "You can't use that command in a Siege Zone!");
-                    return;
-                }
-            }
-        }
-        */
     }
 
 
     // Prevent claim hopping
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPvP(TownyPlayerDamagePlayerEvent event) {
+    public void onPvP(TownyPlayerDamagePlayerEvent event) throws NotRegisteredException {
         if (!event.isCancelled())
             return;
 
@@ -165,6 +148,12 @@ public class CombatListener implements Listener {
         Player attacker = event.getAttackingPlayer();
         Player victim = event.getVictimPlayer();
         CombatTag.getInstance().getLogger().info("TownyPlayerDamagePlayerEvent: Attacker: " + attacker.getName() + ", Victim: " + victim.getName() + ", Cancelled: " + event.isCancelled());
+
+        TownBlock townBlock = TownyUniverse.getInstance().getTownBlock(WorldCoord.parseWorldCoord(victim.getLocation()));
+        if(townBlock != null && townBlock.getType() == TownBlockType.ARENA && townBlock.hasTown()) {
+            event.setCancelled(false);
+            return;
+        }
 
         assert world != null;
         if (!world.isFriendlyFireEnabled() && CombatUtil.isAlly(attacker.getName(), victim.getName()))
