@@ -149,7 +149,7 @@ public class CombatListener implements Listener {
         Player victim = event.getVictimPlayer();
         CombatTag.getInstance().getLogger().info("TownyPlayerDamagePlayerEvent: Attacker: " + attacker.getName() + ", Victim: " + victim.getName() + ", Cancelled: " + event.isCancelled());
 
-        TownBlock townBlock = TownyUniverse.getInstance().getTownBlock(WorldCoord.parseWorldCoord(victim.getLocation()));
+        TownBlock townBlock = TownyUniverse.getInstance().getTownBlockOrNull(WorldCoord.parseWorldCoord(victim.getLocation()));
         if(townBlock != null && townBlock.getType() == TownBlockType.ARENA && townBlock.hasTown()) {
             event.setCancelled(false);
             return;
