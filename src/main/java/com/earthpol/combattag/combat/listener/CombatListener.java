@@ -57,9 +57,9 @@ public class CombatListener implements Listener {
         if (damager.equals(damagee))
             return;
 
-        TownyWorld world = TownyAPI.getInstance().getTownyWorld(event.getEntity().getWorld().getName());
-        Player attacker = (Player) event.getDamager();
-        Player victim = (Player) event.getEntity();
+        TownyWorld world = TownyAPI.getInstance().getTownyWorld(damagee.getWorld().getName());
+        Player attacker = damager;
+        Player victim = damagee;
 
         assert world != null;
         if (!CombatUtil.isAlly(attacker.getName(), victim.getName()) && CombatHandler.isTagged(attacker) && CombatHandler.isTagged(victim)){
@@ -147,7 +147,7 @@ public class CombatListener implements Listener {
         TownyWorld world = TownyAPI.getInstance().getTownyWorld(event.getVictimPlayer().getWorld().getName());
         Player attacker = event.getAttackingPlayer();
         Player victim = event.getVictimPlayer();
-        CombatTag.getInstance().getLogger().info("TownyPlayerDamagePlayerEvent: Attacker: " + attacker.getName() + ", Victim: " + victim.getName() + ", Cancelled: " + event.isCancelled());
+        //CombatTag.getInstance().getLogger().info("TownyPlayerDamagePlayerEvent: Attacker: " + attacker.getName() + ", Victim: " + victim.getName() + ", Cancelled: " + event.isCancelled());
 
         TownBlock townBlock = TownyUniverse.getInstance().getTownBlockOrNull(WorldCoord.parseWorldCoord(victim.getLocation()));
         if(townBlock != null && townBlock.getType() == TownBlockType.ARENA && townBlock.hasTown()) {
