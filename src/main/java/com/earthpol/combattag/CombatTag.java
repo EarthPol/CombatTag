@@ -4,6 +4,7 @@ import com.earthpol.combattag.combat.CombatHandler;
 import com.earthpol.combattag.combat.bossbar.BossBarTask;
 import com.earthpol.combattag.combat.listener.CombatListener;
 import com.earthpol.combattag.commands.CombatTagCommand;
+import com.earthpol.combattag.placeholders.TaggedPlaceholder;
 import com.palmergames.bukkit.towny.scheduling.impl.FoliaTaskScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -31,6 +32,7 @@ public final class CombatTag extends JavaPlugin {
         setupCommands();
         runTasks();
         log.info("§e CombatTag has been §aenabled§e.");
+        new TaggedPlaceholder().register();
     }
 
     private void setupListeners(){

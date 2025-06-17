@@ -3,12 +3,19 @@ version: '${project.version}'
 main: com.earthpol.combattag.CombatTag
 api-version: '1.20'
 folia-supported: true
-depend: [ Towny]
-authors: [ 0xBit ]
+depend: [ Towny ]
+softdepend: [ PlaceholderAPI ]
+authors: [ 0xBit, Kauntar, Bustun ]
 description: A simple CombatTag Plugin
 commands:
   combattag:
-    description: CobmatTag Command
+    description: CombatTag Command
     permission: polaris.command.combattag
     permission-message: You do not have permission to run this command!
     usage: /combattag
+dependencies:
+  server:
+    PlaceholderAPI:
+      # Load order is relative to the dependency. So here PlaceholderAPI loads before our plugin.
+      load: BEFORE
+      required: true
