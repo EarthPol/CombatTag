@@ -70,6 +70,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/EarthPol/EarthPolLib</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -90,6 +94,12 @@
             <artifactId>towny</artifactId>
             <version>0.100.1.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.earthpol</groupId>
+            <artifactId>earthpollib</artifactId>
+            <version>1.6.1</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

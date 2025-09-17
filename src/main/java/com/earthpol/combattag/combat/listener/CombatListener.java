@@ -118,7 +118,7 @@ public class CombatListener implements Listener {
         CombatHandler.removeTag(player);
     }
 
-    private static final Set<String> WHITELISTED_COMMANDS = ImmutableSet.of("tc", "nc", "g", "ally", "msg", "r", "reply", "tell", "pm", "mod", "admin", "combattag", "lc");
+    private static final Set<String> WHITELISTED_COMMANDS = ImmutableSet.of("tc", "nc", "g", "ally", "msg", "r", "reply", "tell", "pm", "mod", "admin", "combattag", "lc", "sw", "siegewar");
     private static final Set<String> BLACKLISTED_COMMANDS = ImmutableSet.of("tfly", "townyflight:tfly", "townyfly", "townyflight", "townyflight:townyfly", "townyflight:townyflight", "sit");
 
     @EventHandler(priority = EventPriority.HIGHEST)
