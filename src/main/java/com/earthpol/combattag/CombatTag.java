@@ -1,7 +1,7 @@
 package com.earthpol.combattag;
 
 import com.earthpol.combattag.combat.CombatHandler;
-import com.earthpol.combattag.combat.bossbar.BossBarTask;
+import com.earthpol.combattag.combat.actionbar.ActionBarTask;
 import com.earthpol.combattag.combat.listener.CombatListener;
 import com.earthpol.combattag.commands.CombatTagCommand;
 import com.earthpol.combattag.placeholders.TaggedPlaceholder;
@@ -45,7 +45,8 @@ public final class CombatTag extends JavaPlugin {
 
     private void runTasks(){
         FoliaTaskScheduler scheduler = new FoliaTaskScheduler(this);
-        scheduler.runAsyncRepeating(new BossBarTask(), 10L, 10L);
+        //scheduler.runAsyncRepeating(new BossBarTask(), 10L, 10L);
+        scheduler.runAsyncRepeating(new ActionBarTask(), 10L, 10L);
     }
 
     @Override
