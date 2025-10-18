@@ -9,6 +9,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Global ticker mirroring BossBarTask, but rendering to the action bar.
  * Folia-safe: all player interaction is scheduled on each player's entity thread.
@@ -26,6 +30,8 @@ public final class ActionBarTask extends BukkitRunnable {
     private static final String GRAY   = "§7";
     private static final String RESET  = "§r";
 
+    private static final Map<UUID, String> LAST_SENT = new ConcurrentHashMap<>();
+
     @Override
     public void run() {
         // Global tick. Never touch Player directly here; hop to the player's region first.
@@ -41,33 +47,34 @@ public final class ActionBarTask extends BukkitRunnable {
 
     /** One-player update on that player's region thread. */
     private static void tickPlayer(Player player) {
-        if (!player.isOnline()) {
-            clearOnce(player);
-            return;
-        }
+        if (!player.isOnline()) return;
 
         long remaining = CombatHandler.getRemaining(player);
         if (remaining <= 0) {
-            clearOnce(player);
+            // Stop sending; don't clear so other plugins can write their own messages
+            LAST_SENT.remove(player.getUniqueId());
             return;
         }
 
         double fraction = Math.max(0.0, Math.min(1.0, (double) remaining / (double) CombatHandler.TAG_TIME));
         String bar = buildBar(fraction);
         String secs = (remaining / 1000) + "s";
-
         String legacy = bar + " " + GRAY + secs + RESET;
-        sendActionBar(player, LegacyComponentSerializer.legacySection().deserialize(legacy));
+
+        // Only send if different from what we last sent
+        UUID id = player.getUniqueId();
+        String prev = LAST_SENT.get(id);
+        if (!legacy.equals(prev)) {
+            sendActionBar(player, LegacyComponentSerializer.legacySection().deserialize(legacy));
+            LAST_SENT.put(id, legacy);
+        }
     }
 
     /** Mirrors BossBarTask.remove(...) call sites. Clears once on the player's region thread. */
     public static void remove(Player player) {
         if (player == null) return;
-        player.getScheduler().run(
-                CombatTag.getInstance(),
-                (ScheduledTask scheduled) -> clearOnce(player),
-                null
-        );
+        LAST_SENT.remove(player.getUniqueId());
+        // No clear/send here on purpose
     }
 
     private static void clearOnce(Player p) {
@@ -75,9 +82,9 @@ public final class ActionBarTask extends BukkitRunnable {
     }
 
     private static void sendActionBar(Player p, Component c) {
-        try { p.sendActionBar(c); }
-        catch (NoSuchMethodError ignored) {
-            // Very old API fallback path
+        try {
+            p.sendActionBar(c);
+        } catch (NoSuchMethodError ignored) {
             p.sendActionBar(LegacyComponentSerializer.legacySection().serialize(c));
         }
     }
