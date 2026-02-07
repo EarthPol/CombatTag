@@ -6,7 +6,7 @@
 
     <groupId>com.earthpol</groupId>
     <artifactId>CombatTag</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.1</version>
     <packaging>jar</packaging>
 
     <name>CombatTag</name>
@@ -70,10 +70,6 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        <repository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/EarthPol/EarthPolLib</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -93,6 +89,9 @@
             <groupId>dev.folia</groupId>
             <artifactId>folia-api</artifactId>
             <version>1.20.6-R0.1-SNAPSHOT</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

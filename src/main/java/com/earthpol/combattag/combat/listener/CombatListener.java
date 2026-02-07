@@ -6,6 +6,9 @@ import com.google.common.collect.ImmutableSet;
 import com.earthpol.combattag.combat.CombatHandler;
 import com.earthpol.combattag.combat.bossbar.BossBarTask;
 import com.google.common.collect.Sets;
+import com.earthpol.combattag.combat.actionbar.ActionBarTask;
+import com.google.common.collect.ImmutableSet;
+import com.earthpol.combattag.combat.CombatHandler;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.event.damage.TownyPlayerDamagePlayerEvent;
@@ -87,7 +90,8 @@ public class CombatListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        BossBarTask.remove(player);
+        //BossBarTask.remove(player);
+        ActionBarTask.remove(player);
 
         if (!CombatHandler.isTagged(player))
             return;
