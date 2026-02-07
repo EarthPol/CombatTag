@@ -117,7 +117,10 @@ public class CombatTagCommand implements CommandExecutor {
         try{
             reloadableConfigHandler.reload();
             Bukkit.getLogger().info("CombatTag has reloaded.");
-            sender.sendMessage("§6CombatTag §fhas reloaded");
+
+            if (sender instanceof Player) {
+                sender.sendMessage("§6CombatTag §fhas reloaded");
+            }
         }catch(Exception ex){
             Bukkit.getLogger().severe("Reload command failed!" + ex);
             sender.sendMessage("§4CombatTag reload failed. Check console for more detail.");

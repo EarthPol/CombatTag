@@ -114,9 +114,6 @@ public class CombatListener implements Listener {
 
         if (deathsForLoggingOut.contains(player.getUniqueId())) {
             deathsForLoggingOut.remove(player.getUniqueId());
-            if(Objects.equals(GameRule.SHOW_DEATH_MESSAGES, true)) {
-                event.deathMessage(Component.text(player.getName() + " was killed for logging out in combat."));
-            }
         }
 
         if (!CombatHandler.isTagged(player))
@@ -125,10 +122,8 @@ public class CombatListener implements Listener {
         CombatHandler.removeTag(player);
     }
 
-    private static Set<String> getAllowedCommands() {
-        return Arrays.stream(ReloadableConfig.ALLOWED_COMMANDS.getString().split(","))
-                .map(s -> s.trim().toLowerCase(Locale.ROOT))
-                .collect(Collectors.toSet());
+    private static List<?> getAllowedCommands() {
+        return ReloadableConfig.ALLOWED_COMMANDS.getList();
     }
 
 
@@ -147,7 +142,7 @@ public class CombatListener implements Listener {
         if (command.contains(":"))
             command = command.substring(command.indexOf(":") + 1);
 
-        for (String allowed : getAllowedCommands()) {
+        for (Object allowed : getAllowedCommands()) {
             if (command.equals(allowed))
                 return;
         }

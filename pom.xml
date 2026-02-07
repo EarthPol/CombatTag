@@ -82,16 +82,13 @@
         <dependency>
             <groupId>com.github.earthpol</groupId>
             <artifactId>earthpollib</artifactId>
-            <version>1.6.1</version>
+            <version>1.11.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>dev.folia</groupId>
-            <artifactId>folia-api</artifactId>
-            <version>1.20.6-R0.1-SNAPSHOT</version>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.8-R0.1-SNAPSHOT</version>
+            <version>1.21.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
