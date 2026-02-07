@@ -1,9 +1,11 @@
 package com.earthpol.combattag.combat.listener;
 
 import com.earthpol.combattag.CombatTag;
+import com.earthpol.combattag.util.ReloadableConfig;
 import com.google.common.collect.ImmutableSet;
 import com.earthpol.combattag.combat.CombatHandler;
 import com.earthpol.combattag.combat.bossbar.BossBarTask;
+import com.google.common.collect.Sets;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.event.damage.TownyPlayerDamagePlayerEvent;
@@ -29,6 +31,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CombatListener implements Listener {
     private Set<UUID> deathsForLoggingOut = new HashSet<>();
@@ -118,24 +121,37 @@ public class CombatListener implements Listener {
         CombatHandler.removeTag(player);
     }
 
-    private static final Set<String> WHITELISTED_COMMANDS = ImmutableSet.of("tc", "nc", "g", "ally", "msg", "r", "reply", "tell", "pm", "mod", "admin", "combattag", "lc", "sw", "siegewar");
-    private static final Set<String> BLACKLISTED_COMMANDS = ImmutableSet.of("tfly", "townyflight:tfly", "townyfly", "townyflight", "townyflight:townyfly", "townyflight:townyflight", "sit");
+    private static Set<String> getAllowedCommands() {
+        return Arrays.stream(ReloadableConfig.ALLOWED_COMMANDS.getString().split(","))
+                .map(s -> s.trim().toLowerCase(Locale.ROOT))
+                .collect(Collectors.toSet());
+    }
+
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onCommand(PlayerCommandPreprocessEvent event){
+    public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        if(CombatHandler.isTagged(player) && !player.hasPermission("earthpol.command.combattag")) {
-            String message = event.getMessage();
-            message = message.replaceFirst("/", "");
 
-            for (String value : WHITELISTED_COMMANDS) {
-                if (message.equalsIgnoreCase(value) || message.toLowerCase().startsWith(value + " "))
-                    return;
-            }
-            event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "You can't use that command while being in combat.");
+        if (!CombatHandler.isTagged(player))
+            return;
+
+        if (player.hasPermission("earthpol.combattag.bypass") || player.isOp()) return;
+
+        String message = event.getMessage().substring(1).toLowerCase(Locale.ROOT);
+        String command = message.split(" ")[0];
+
+        if (command.contains(":"))
+            command = command.substring(command.indexOf(":") + 1);
+
+        for (String allowed : getAllowedCommands()) {
+            if (command.equals(allowed))
+                return;
         }
+
+        event.setCancelled(true);
+        player.sendMessage(ChatColor.RED + "You can't use that command while being in combat.");
     }
+
 
 
     // Prevent claim hopping
