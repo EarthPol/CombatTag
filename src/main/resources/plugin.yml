@@ -10,7 +10,7 @@ description: A simple CombatTag Plugin
 commands:
   combattag:
     description: CombatTag Command
-    permission: polaris.command.combattag
+    permission: earthpol.command.combattag
     permission-message: You do not have permission to run this command!
     usage: /combattag
 dependencies:

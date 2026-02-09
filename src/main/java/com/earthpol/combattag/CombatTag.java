@@ -5,11 +5,14 @@ import com.earthpol.combattag.combat.actionbar.ActionBarTask;
 import com.earthpol.combattag.combat.listener.CombatListener;
 import com.earthpol.combattag.commands.CombatTagCommand;
 import com.earthpol.combattag.placeholders.TaggedPlaceholder;
+import com.earthpol.combattag.util.ReloadableConfig;
+import com.earthpol.earthPolLib.config.ReloadableConfigHandler;
 import com.palmergames.bukkit.towny.scheduling.impl.FoliaTaskScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import java.util.logging.Logger;
@@ -23,6 +26,9 @@ public final class CombatTag extends JavaPlugin {
     }
     private static Logger log = Bukkit.getLogger();
 
+    public static ReloadableConfigHandler<ReloadableConfig> configHandler;
+    public static ReloadableConfigHandler<ReloadableConfig> getConfigHandler(){ return configHandler; }
+
     @Override
     public void onEnable() {
         instance = this;
@@ -33,7 +39,19 @@ public final class CombatTag extends JavaPlugin {
         runTasks();
         log.info("§e CombatTag has been §aenabled§e.");
         new TaggedPlaceholder().register();
+
+        try {
+            configHandler =  new ReloadableConfigHandler<>(
+                    this,
+                    "config.yml",
+                    ReloadableConfig.class
+            );
+        } catch (IOException e) {
+            Bukkit.getLogger().severe(e.getMessage());
+            getServer().getPluginManager().disablePlugin(this);
+        }
     }
+
 
     private void setupListeners(){
         getServer().getPluginManager().registerEvents(new CombatListener(), this);
