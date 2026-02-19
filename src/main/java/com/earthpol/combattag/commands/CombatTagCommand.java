@@ -49,7 +49,7 @@ public class CombatTagCommand implements CommandExecutor {
                     CombatTag.getTranslationService(),
                     sender,
                     "commands.errors.incorrect-usage",
-                    "/combattag help"
+                    (Object) "/combattag help"
                 );
                 break;
         }
@@ -76,7 +76,7 @@ public class CombatTagCommand implements CommandExecutor {
                     translationService,
                     sender,
                     "commands.errors.incorrect-usage",
-                    "/combattag tag <username>"
+                    (Object) "/combattag tag <username>"
                 );
                 return;
             }
@@ -89,7 +89,7 @@ public class CombatTagCommand implements CommandExecutor {
         }
 
         CombatHandler.applyTag(target);
-        Translations.sendPrefixed(translationService, sender, "commands.tag.success", target.getName());
+        Translations.sendPrefixed(translationService, sender, "commands.tag.success", (Object) target.getName());
     }
 
     private void parseUntagCommand(CommandSender sender, String[] args) {
@@ -104,7 +104,7 @@ public class CombatTagCommand implements CommandExecutor {
                     translationService,
                     sender,
                     "commands.errors.incorrect-usage",
-                    "/combattag untag <username>"
+                    (Object) "/combattag untag <username>"
                 );
                 return;
             }
@@ -113,7 +113,7 @@ public class CombatTagCommand implements CommandExecutor {
                 target = p;
                 if (CombatHandler.isTagged(target)) {
                     CombatHandler.removeTag(target);
-                    Translations.sendPrefixed(translationService, sender, "commands.untag.success", target.getName());
+                    Translations.sendPrefixed(translationService, sender, "commands.untag.success", (Object) target.getName());
                 }
 
             }
@@ -132,7 +132,7 @@ public class CombatTagCommand implements CommandExecutor {
         }
 
         CombatHandler.removeTag(target);
-        Translations.sendPrefixed(translationService, sender, "commands.untag.success", target.getName());
+        Translations.sendPrefixed(translationService, sender, "commands.untag.success", (Object) target.getName());
 
     }
 
