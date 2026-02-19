@@ -1,0 +1,44 @@
+general:
+  prefix: "&7[&bCombatTag&7]: "
+
+plugin:
+  startup:
+    banner: "&e======= &aCombatTag &e======="
+    support-discord: "&eSupport Discord: &ahttps://discord.gg/epmc"
+    enabled: "&eCombatTag has been &aenabled&e."
+  reload:
+    success-console: "CombatTag has reloaded."
+    failed-console: "Reload command failed! {0}"
+
+commands:
+  help:
+    header: "&eHelp Command"
+    tag: "&e/combattag tag <username>"
+    untag: "&e/combattag untag <username>"
+    reload: "&e/combattag reload"
+  errors:
+    incorrect-usage: "&eIncorrect Usage: &e{0}"
+    no-permission: "&cYou do not have permission to run this command!"
+    player-not-found: "&cPlayer doesn't exist."
+    player-not-tagged: "&cPlayer is not combat tagged."
+  tag:
+    success: "&e{0} has been tagged."
+  untag:
+    success: "&e{0} has been untagged."
+  reload:
+    success: "&6CombatTag &fhas reloaded"
+    failed: "&4CombatTag reload failed. Check console for more detail."
+
+combat:
+  tagged: "&cYou have been combat tagged for {0} seconds! Do not log out or you will get killed instantly."
+  ended: "&aYou are no longer in combat."
+  blocked-command: "&cYou can't use that command while being in combat."
+  riptide-disabled: "&cThe riptide enchantment is disabled while being in combat."
+  log:
+    pvp-enabled-between: "Combat enabled between {0} and {1}"
+
+ui:
+  bossbar:
+    title: "&c&lCombat Tag&7: &c{0}s"
+  actionbar:
+    seconds: "{0}s"
