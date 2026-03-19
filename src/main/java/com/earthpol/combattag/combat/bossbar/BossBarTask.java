@@ -1,8 +1,9 @@
 package com.earthpol.combattag.combat.bossbar;
 
+import com.earthpol.combattag.CombatTag;
 import com.earthpol.combattag.combat.CombatHandler;
+import com.earthpol.earthPolLib.translation.Translations;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -23,7 +24,15 @@ public class BossBarTask extends BukkitRunnable {
             if (CombatHandler.isTagged(online)) {
                 BossBar bossBar = bossBarMap.get(online.getUniqueId());
                 if (bossBar == null) {
-                    bossBar = Bukkit.createBossBar(ChatColor.RED + ChatColor.BOLD.toString() + "Combat Tag" + ChatColor.GRAY + ": ", BarColor.RED, BarStyle.SOLID);
+                    bossBar = Bukkit.createBossBar(
+                        Translations.text(
+                            CombatTag.getTranslationService(),
+                            "ui.bossbar.title",
+                            CombatHandler.TAG_TIME / 1000
+                        ),
+                        BarColor.RED,
+                        BarStyle.SOLID
+                    );
                     bossBar.addPlayer(online);
 
                     bossBarMap.put(online.getUniqueId(), bossBar);
@@ -50,7 +59,7 @@ public class BossBarTask extends BukkitRunnable {
         if (remaining < 0)
             return;
 
-        bossBar.setTitle(ChatColor.RED + ChatColor.BOLD.toString() + "Combat Tag" + ChatColor.GRAY + ": " + ChatColor.RED + (remaining / 1000) + "s");
+        bossBar.setTitle(Translations.text(CombatTag.getTranslationService(), "ui.bossbar.title", remaining / 1000));
         bossBar.setProgress((double) remaining / CombatHandler.TAG_TIME);
     }
 

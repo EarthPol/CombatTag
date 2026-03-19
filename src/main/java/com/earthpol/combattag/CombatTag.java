@@ -7,6 +7,8 @@ import com.earthpol.combattag.commands.CombatTagCommand;
 import com.earthpol.combattag.placeholders.TaggedPlaceholder;
 import com.earthpol.combattag.util.ReloadableConfig;
 import com.earthpol.earthPolLib.config.ReloadableConfigHandler;
+import com.earthpol.earthPolLib.translation.TranslationService;
+import com.earthpol.earthPolLib.translation.Translations;
 import com.palmergames.bukkit.towny.scheduling.impl.FoliaTaskScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -28,16 +30,21 @@ public final class CombatTag extends JavaPlugin {
 
     public static ReloadableConfigHandler<ReloadableConfig> configHandler;
     public static ReloadableConfigHandler<ReloadableConfig> getConfigHandler(){ return configHandler; }
+    private static TranslationService translationService;
+    public static TranslationService getTranslationService() { return translationService; }
 
     @Override
     public void onEnable() {
         instance = this;
-        log.info("§e======= §aCombatTag §e=======");
-        log.info("§eSupport Discord: §ahttps://discord.gg/epmc");
+        translationService = new TranslationService(this, CombatTag.class);
+        translationService.load();
+
+        log.info(Translations.text(translationService, "plugin.startup.banner"));
+        log.info(Translations.text(translationService, "plugin.startup.support-discord"));
         setupListeners();
         setupCommands();
         runTasks();
-        log.info("§e CombatTag has been §aenabled§e.");
+        log.info(Translations.text(translationService, "plugin.startup.enabled"));
         new TaggedPlaceholder().register();
 
         try {

@@ -1,14 +1,10 @@
 package com.earthpol.combattag.combat.listener;
 
 import com.earthpol.combattag.CombatTag;
-import com.earthpol.combattag.util.ReloadableConfig;
-import com.google.common.collect.ImmutableSet;
 import com.earthpol.combattag.combat.CombatHandler;
-import com.earthpol.combattag.combat.bossbar.BossBarTask;
-import com.google.common.collect.Sets;
 import com.earthpol.combattag.combat.actionbar.ActionBarTask;
-import com.google.common.collect.ImmutableSet;
-import com.earthpol.combattag.combat.CombatHandler;
+import com.earthpol.combattag.util.ReloadableConfig;
+import com.earthpol.earthPolLib.translation.Translations;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.event.damage.TownyPlayerDamagePlayerEvent;
@@ -18,9 +14,6 @@ import com.palmergames.bukkit.towny.object.TownBlockType;
 import com.palmergames.bukkit.towny.object.TownyWorld;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.utils.CombatUtil;
-import net.kyori.adventure.text.Component;
-import org.bukkit.ChatColor;
-import org.bukkit.GameRule;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -33,11 +26,14 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
 
 public class CombatListener implements Listener {
-    private Set<UUID> deathsForLoggingOut = new HashSet<>();
+    private final Set<UUID> deathsForLoggingOut = new HashSet<>();
 
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -148,7 +144,7 @@ public class CombatListener implements Listener {
         }
 
         event.setCancelled(true);
-        player.sendMessage(ChatColor.RED + "You can't use that command while being in combat.");
+        Translations.send(CombatTag.getTranslationService(), player, "combat.blocked-command");
     }
 
 
@@ -178,7 +174,14 @@ public class CombatListener implements Listener {
             return;
 
         event.setCancelled(false);
-        CombatTag.getInstance().getLogger().info("Combat enabled between " + attacker.getName() + " and " + victim.getName());
+        CombatTag.getInstance().getLogger().info(
+            Translations.raw(
+                CombatTag.getTranslationService(),
+                "combat.log.pvp-enabled-between",
+                attacker.getName(),
+                victim.getName()
+            )
+        );
     }
 
     @EventHandler
@@ -191,7 +194,7 @@ public class CombatListener implements Listener {
             return;
 
         event.setCancelled(true);
-        player.sendMessage(ChatColor.RED + "The riptide enchantment is disabled while being in combat.");
+        Translations.send(CombatTag.getTranslationService(), player, "combat.riptide-disabled");
     }
 
 }

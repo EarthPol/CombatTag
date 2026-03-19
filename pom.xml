@@ -6,7 +6,7 @@
 
     <groupId>com.earthpol</groupId>
     <artifactId>CombatTag</artifactId>
-    <version>2.2.2</version>
+    <version>2.3.0</version>
     <packaging>jar</packaging>
 
     <name>CombatTag</name>
@@ -70,6 +70,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>bitworksmc-releases</id>
+            <url>https://nexus.bitworksmc.com/repository/maven-releases/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -82,7 +86,7 @@
         <dependency>
             <groupId>com.github.earthpol</groupId>
             <artifactId>earthpollib</artifactId>
-            <version>1.11.1</version>
+            <version>1.12.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

@@ -1,9 +1,9 @@
 package com.earthpol.combattag.combat;
 
 import com.earthpol.combattag.CombatTag;
+import com.earthpol.earthPolLib.translation.Translations;
 import com.palmergames.bukkit.towny.scheduling.impl.FoliaTaskScheduler;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent.Reason;
 
@@ -24,7 +24,7 @@ public class CombatHandler {
     public static void applyTag(Player player) {
         if (!isTagged(player)) {
             player.closeInventory(Reason.PLUGIN);
-            player.sendMessage(ChatColor.RED + "You have been combat tagged for " + (TAG_TIME / 1000) + " seconds! Do not log out or you will get killed instantly.");
+            Translations.send(CombatTag.getTranslationService(), player, "combat.tagged", TAG_TIME / 1000);
         }
 
         player.setFlying(false);
@@ -71,7 +71,7 @@ class CombatTagTask implements Runnable {
             if (player == null || !player.isOnline())
                 continue;
 
-            player.sendMessage(ChatColor.GREEN + "You are no longer in combat.");
+            Translations.send(CombatTag.getTranslationService(), player, "combat.ended");
         }
     }
 }
