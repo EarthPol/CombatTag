@@ -4,7 +4,7 @@ import com.earthpol.combattag.CombatTag;
 import com.earthpol.combattag.combat.CombatHandler;
 import com.earthpol.combattag.combat.actionbar.ActionBarTask;
 import com.earthpol.combattag.util.ReloadableConfig;
-import com.earthpol.earthPolLib.translation.Translations;
+import com.earthpol.earthpollib.translation.Translations;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.event.damage.TownyPlayerDamagePlayerEvent;

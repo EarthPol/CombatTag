@@ -1,7 +1,7 @@
 package com.earthpol.combattag.combat;
 
 import com.earthpol.combattag.CombatTag;
-import com.earthpol.earthPolLib.translation.Translations;
+import com.earthpol.earthpollib.translation.Translations;
 import com.palmergames.bukkit.towny.scheduling.impl.FoliaTaskScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

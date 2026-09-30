@@ -1,8 +1,8 @@
 package com.earthpol.combattag.util;
 
-import com.earthpol.earthPolLib.config.ReloadableConfigNode;
-import com.earthpol.earthPolLib.config.ReloadableConfiguration;
-import com.earthpol.earthPolLib.config.ReloadableListNode;
+import com.earthpol.earthpollib.config.ReloadableConfigNode;
+import com.earthpol.earthpollib.config.ReloadableConfiguration;
+import com.earthpol.earthpollib.config.ReloadableListNode;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package com.earthpol.combattag.combat.bossbar;
 
 import com.earthpol.combattag.CombatTag;
 import com.earthpol.combattag.combat.CombatHandler;
-import com.earthpol.earthPolLib.translation.Translations;
+import com.earthpol.earthpollib.translation.Translations;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;

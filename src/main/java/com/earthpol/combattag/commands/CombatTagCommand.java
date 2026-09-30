@@ -2,9 +2,9 @@ package com.earthpol.combattag.commands;
 
 import com.earthpol.combattag.CombatTag;
 import com.earthpol.combattag.combat.CombatHandler;
-import com.earthpol.earthPolLib.config.ReloadableConfigHandler;
-import com.earthpol.earthPolLib.translation.TranslationService;
-import com.earthpol.earthPolLib.translation.Translations;
+import com.earthpol.earthpollib.config.ReloadableConfigHandler;
+import com.earthpol.earthpollib.translation.TranslationService;
+import com.earthpol.earthpollib.translation.Translations;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

@@ -2,7 +2,7 @@ package com.earthpol.combattag.combat.actionbar;
 
 import com.earthpol.combattag.CombatTag;
 import com.earthpol.combattag.combat.CombatHandler;
-import com.earthpol.earthPolLib.translation.Translations;
+import com.earthpol.earthpollib.translation.Translations;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;

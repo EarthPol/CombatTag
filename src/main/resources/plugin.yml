@@ -1,7 +1,7 @@
 name: CombatTag
 version: '${project.version}'
 main: com.earthpol.combattag.CombatTag
-api-version: '1.20'
+api-version: '26.2'
 folia-supported: true
 depend: [ Towny ]
 softdepend: [ PlaceholderAPI ]
