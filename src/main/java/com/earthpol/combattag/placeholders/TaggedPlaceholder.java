@@ -24,14 +24,14 @@ public class TaggedPlaceholder extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(Player player, String identifier) {
         if (identifier.equals("is_tagged")) {
-            if (CombatHandler.isTagged(player)) {
+            if (CombatHandler.isTagged(player.getUniqueId())) {
                 return "true";
             }
             return "false";
         }
         if(identifier.equals("time_left")) {
-            if (CombatHandler.getRemaining(player) != -1) {
-                return "" + CombatHandler.getRemaining(player);
+            if (CombatHandler.getRemaining(player.getUniqueId()) != -1) {
+                return "" + CombatHandler.getRemaining(player.getUniqueId());
             }
             return "-1";
         }

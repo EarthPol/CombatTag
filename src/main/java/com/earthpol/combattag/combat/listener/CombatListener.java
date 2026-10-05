@@ -2,6 +2,7 @@ package com.earthpol.combattag.combat.listener;
 
 import com.earthpol.combattag.CombatTag;
 import com.earthpol.combattag.combat.CombatHandler;
+import com.earthpol.combattag.combat.CombatTagRuntime;
 import com.earthpol.combattag.combat.actionbar.ActionBarTask;
 import com.earthpol.combattag.util.ReloadableConfig;
 import com.earthpol.earthpollib.translation.Translations;
@@ -26,15 +27,21 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CombatListener implements Listener {
-    private final Set<UUID> deathsForLoggingOut = new HashSet<>();
+    private final Set<UUID> deathsForLoggingOut = ConcurrentHashMap.newKeySet();
+    private final CombatTagRuntime runtime;
+    private final ActionBarTask actionBar;
 
+    public CombatListener(CombatTagRuntime runtime, ActionBarTask actionBar) {
+        this.runtime = runtime;
+        this.actionBar = actionBar;
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDamage(EntityDamageByEntityEvent event) {
@@ -67,19 +74,24 @@ public class CombatListener implements Listener {
         if (!CombatUtil.isAlly(attacker.getName(), victim.getName()) && CombatHandler.isTagged(attacker) && CombatHandler.isTagged(victim)){
             //Attacker is not ally to victim, attacker is tagged, victim is tagged.
             event.setCancelled(false);
-            CombatHandler.applyTag(damagee);
-            CombatHandler.applyTag(damager);
+            tagPlayer(damagee);
+            tagPlayer(damager);
         } else if(!CombatUtil.isAlly(attacker.getName(), victim.getName()) && !event.isCancelled()){
             //Attacker is not ally to victim, event is not canceled.
-            CombatHandler.applyTag(damagee);
-            CombatHandler.applyTag(damager);
+            tagPlayer(damagee);
+            tagPlayer(damager);
         } else if(!world.isFriendlyFireEnabled() && !CombatUtil.isAlly(attacker.getName(), victim.getName()) && !CombatHandler.isTagged(attacker) && CombatHandler.isTagged(victim)){
             //FriendFire is not enabled, attacker is not ally to victim, attacker is not tagged, victim is not tagged.
             //This confirms they are an ENEMY and are in your claims with a combat tag. So you can join the battle and be tagged yourself.
             event.setCancelled(false);
-            CombatHandler.applyTag(damagee);
-            CombatHandler.applyTag(damager);
+            tagPlayer(damagee);
+            tagPlayer(damager);
         }
+    }
+
+    // Tags the player on the thread that owns it, the event thread only owns the damagee
+    private void tagPlayer(Player player) {
+        runtime.runForPlayer(player, () -> runtime.applyTag(player));
     }
 
     @EventHandler
@@ -87,7 +99,7 @@ public class CombatListener implements Listener {
         Player player = event.getPlayer();
 
         //BossBarTask.remove(player);
-        ActionBarTask.remove(player);
+        actionBar.forget(player);
 
         if (!CombatHandler.isTagged(player))
             return;

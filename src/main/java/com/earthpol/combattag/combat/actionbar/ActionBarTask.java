@@ -1,27 +1,26 @@
 package com.earthpol.combattag.combat.actionbar;
 
 import com.earthpol.combattag.CombatTag;
-import com.earthpol.combattag.combat.CombatHandler;
+import com.earthpol.combattag.combat.CombatTagRuntime;
 import com.earthpol.earthpollib.translation.Translations;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.plugin.Plugin;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Global ticker mirroring BossBarTask, but rendering to the action bar.
- * Folia-safe: all player interaction is scheduled on each player's entity thread.
- *
- * Shows: a red '|' bar that shrinks with time, the elapsed half goes yellow,
+ * Global ticker that renders combat tag time to the action bar
+ * The ticker runs on the global region and updates every player on their own entity thread
+ * Shows a red '|' bar that shrinks with time, the elapsed half goes yellow,
  * then turns white near the end. Example: "|||||||||||||||||||||||||| 45.0s"
  */
-public final class ActionBarTask extends BukkitRunnable {
+public final class ActionBarTask {
 
     // Visual controls
     private static final int SEGMENTS = 30;        // number of '|' characters
@@ -31,55 +30,73 @@ public final class ActionBarTask extends BukkitRunnable {
     private static final String GRAY   = "§7";
     private static final String RESET  = "§r";
 
-    private static final Map<UUID, String> LAST_SENT = new ConcurrentHashMap<>();
+    private final Plugin plugin;
+    private final CombatTagRuntime runtime;
+    private final Map<UUID, String> lastSent = new ConcurrentHashMap<>();
 
-    @Override
+    private ScheduledTask handle;
+
+    public ActionBarTask(Plugin plugin, CombatTagRuntime runtime) {
+        this.plugin = plugin;
+        this.runtime = runtime;
+    }
+
+    /** Starts the repeating ticker for this enable cycle */
+    public void start() {
+        handle = Bukkit.getGlobalRegionScheduler()
+                .runAtFixedRate(plugin, scheduled -> run(), 10L, 10L);
+    }
+
+    /** Cancels the ticker and drops every cached render value */
+    public void stop() {
+        ScheduledTask current = handle;
+        handle = null;
+        if (current != null) {
+            current.cancel();
+        }
+        lastSent.clear();
+    }
+
     public void run() {
-        // Global tick. Never touch Player directly here; hop to the player's region first.
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            final Player player = p;
-            player.getScheduler().run(
-                    CombatTag.getInstance(),
-                    (ScheduledTask scheduled) -> tickPlayer(player),
-                    null
-            );
+        // Global tick. Never touch Player directly here, hop to the player region first.
+        if (!runtime.isActive()) {
+            return;
+        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            runtime.runForPlayer(player, () -> tickPlayer(player));
         }
     }
 
-    /** One-player update on that player's region thread. */
-    private static void tickPlayer(Player player) {
-        if (!player.isOnline()) return;
+    /** One-player update on that player region thread. */
+    private void tickPlayer(Player player) {
+        if (!runtime.isActive() || !player.isOnline()) return;
 
-        long remaining = CombatHandler.getRemaining(player);
+        long remaining = runtime.getRemainingMillis(player.getUniqueId());
         if (remaining <= 0) {
-            // Stop sending; don't clear so other plugins can write their own messages
-            LAST_SENT.remove(player.getUniqueId());
+            // Stop sending, leave the bar alone so other plugins can write their own state
+            lastSent.remove(player.getUniqueId());
             return;
         }
 
-        double fraction = Math.max(0.0, Math.min(1.0, (double) remaining / (double) CombatHandler.TAG_TIME));
+        long duration = runtime.getDurationMillis();
+        double fraction = Math.max(0.0, Math.min(1.0, (double) remaining / (double) duration));
         String bar = buildBar(fraction);
         String secs = Translations.raw(CombatTag.getTranslationService(), player, "ui.actionbar.seconds", remaining / 1000);
         String legacy = bar + " " + GRAY + secs + RESET;
 
         // Only send if different from what we last sent
         UUID id = player.getUniqueId();
-        String prev = LAST_SENT.get(id);
+        String prev = lastSent.get(id);
         if (!legacy.equals(prev)) {
             sendActionBar(player, LegacyComponentSerializer.legacySection().deserialize(legacy));
-            LAST_SENT.put(id, legacy);
+            lastSent.put(id, legacy);
         }
     }
 
-    /** Mirrors BossBarTask.remove(...) call sites. Clears once on the player's region thread. */
-    public static void remove(Player player) {
+    /** Drops the cached render value of one player */
+    public void forget(Player player) {
         if (player == null) return;
-        LAST_SENT.remove(player.getUniqueId());
-        // No clear/send here on purpose
-    }
-
-    private static void clearOnce(Player p) {
-        try { p.sendActionBar(Component.empty()); } catch (Throwable ignored) {}
+        lastSent.remove(player.getUniqueId());
     }
 
     private static void sendActionBar(Player p, Component c) {
